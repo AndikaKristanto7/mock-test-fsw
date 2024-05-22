@@ -93,7 +93,7 @@ function App() {
                             </Col>
                             <Col md={{span:3,offset:5}}>
                                 <Button variant="primary" type="submit">
-                                    Submit
+                                    Login
                                 </Button>
                             </Col>
                         </Row>   
