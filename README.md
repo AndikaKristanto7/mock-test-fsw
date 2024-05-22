@@ -28,7 +28,7 @@ JSON berguna untuk client & server untuk berkomunikasi, bertukar data. Client me
 4. Misc : refresh token every 25 min
 
 # App Url
-TBD
+https://mock-test-fsw.vercel.app/
 
 # How to use App 
 1. Go to App Url
@@ -44,7 +44,7 @@ After that, click Login
 6. Logout if there's nothing to do left
 
 # API Documentation
-TBD
+https://documenter.getpostman.com/view/823818/2sA3QpBDH7
 
 # References
 Login & Registration Form :
