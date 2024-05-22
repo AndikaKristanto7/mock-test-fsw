@@ -39,7 +39,7 @@ class Http {
         acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
         return acc;
       }, {});
-    if(this.cookie !== '' && this.cookie.user){
+    if(this.cookie !== '' && typeof this.cookie.user != "undefined"){
       let userCookie = JSON.parse(this.cookie.user)
       this.token = userCookie.token
     }

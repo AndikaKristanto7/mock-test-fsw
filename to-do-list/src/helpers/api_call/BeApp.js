@@ -18,8 +18,24 @@ class BeApp {
     return httpCall.post(`${this.v1Url}/user/login`,data)
   }
 
-  refreshToken(email){
-    return httpCall.post(`${env.getEnv('API_URL')}/refresh-token`,email)
+  refreshToken(data){
+    return httpCall.post(`${this.baseUrl}/refresh-token`,data)
+  }
+
+  getTodoByUsername(username){
+    return httpCall.get(`${this.v1Url}/todo`,username)
+  }
+
+  insertTodo(data){
+    return httpCall.post(`${this.v1Url}/todo`,data)
+  }
+
+  editTodo(data){
+    return httpCall.put(`${this.v1Url}/todo`,data)
+  }
+
+  deleteTodo(data){
+    return httpCall.delete(`${this.v1Url}/todo/${data.id}`)
   }
 
 }

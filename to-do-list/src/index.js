@@ -13,6 +13,9 @@ import {
   Route,
   Link,
 } from "react-router-dom";
+import store from './store'
+import { Provider } from 'react-redux'
+import TodoApp from './views/TodoApp';
 
 const router = createBrowserRouter([
   {
@@ -27,16 +30,16 @@ const router = createBrowserRouter([
   },
   {
     path:"/to-do-list",
-    element : <h1>To do list</h1>
+    element : <TodoApp/>
   }
 ]);
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

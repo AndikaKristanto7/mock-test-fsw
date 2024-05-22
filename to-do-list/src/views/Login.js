@@ -11,6 +11,8 @@ import Alert from 'react-bootstrap/Alert';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useCookies } from 'react-cookie'
+import {useSelector, useDispatch} from "react-redux";
+import { loginUser } from "../store/actions/userAction"
 function App() {
     const {
         register,
@@ -24,10 +26,9 @@ function App() {
         error : false,
         msg : ''
     })
-
     const [cookies, setCookie,removeCookie] = useCookies(['user'])
-
     const navigate = useNavigate({})
+    const dispatch = useDispatch();
 
     const onSubmit = async (data) => {
         let submitRespObj = {submitted : true}
@@ -41,6 +42,10 @@ function App() {
             setCookie('user',resp.data.data, {path : '/',expires})
             setTimeout(()=>{
                 navigate('/to-do-list')
+                dispatch(loginUser({
+                    username : resp.data.data.username,
+                    token : resp.data.data.token
+                }))
             },1500)
 
         })
