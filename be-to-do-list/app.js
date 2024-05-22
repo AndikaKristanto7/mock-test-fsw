@@ -8,7 +8,6 @@ const jwtSecret = getEnv('SECRET')
 const port = 8080
 function authenticateToken(req, res, next) {
   let reqPath = req.path
-  console.log(typeof reqPath)
   if (req.method === 'GET') {
       // If it's a GET request, skip token verification and move to the next middleware
       next();
@@ -34,7 +33,16 @@ function authenticateToken(req, res, next) {
 
 app.use(cors())
 app.use(express.json())
+app.post('/refresh-token',(req,res)=>{
+    const {username,pin} = req.body
+    const token = jwt.sign({ username,pin }, jwtSecret,{expiresIn: 30 * 60});
+    return res.json({
+        token
+    }) 
+})
+ 
 app.use(authenticateToken)
+
 app.use(router)
 
 app.listen(port, () => {

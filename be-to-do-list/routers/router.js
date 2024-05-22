@@ -39,6 +39,9 @@ async function getTodosByUsername(username){
             user : {
                 username
             }
+        },
+        orderBy : {
+            createdAt : 'asc'
         }
     })
     return todos
@@ -67,7 +70,7 @@ async function getTodoById(id){
             updatedAt : true
         },
         where : {
-            id,
+            id : Number(id),
             deletedAt : null,
         }
     })
@@ -112,6 +115,7 @@ app.group("/api/v1",() =>{
     app.group('/user', () => {
         app.post('/register', async (req,res) => {
             const {username,pin,confirmPin} = req.body
+            let error = {};
             try{
                 if(pin != confirmPin){
                     throw {code:400,error:true,msg:'Confirmation PIN is not match!'}
@@ -119,11 +123,11 @@ app.group("/api/v1",() =>{
 
                 let getUserByUsernameResult = await getUserByUsername(username)
                 if(getUserByUsernameResult){
-                    throw {code:503,error:true,msg:'User/email exist!'}
+                    throw {code:503,error:true,msg:'Username/email exist!'}
                 }
 
                 await insertUser(req.body)
-                return res.status(200).json({code:200,error:false,msg:`Create user with username ${username} success!`})
+                return res.status(200).json({code:200,error:false,msg:`Create user with username/email ${username} success!`})
             }catch(e){
                 return res.status(e.code).json(e)
             }
@@ -131,30 +135,35 @@ app.group("/api/v1",() =>{
 
         app.post('/login',async (req,res) => {
             const {username, pin} = req.body
+            var errorObj = {}
             try{
                 let getUserByUsernameResult = await getUserByUsername(username)
                 if(!getUserByUsernameResult){
-                    throw {code:503,error:true,msg:'User/email not found!'}
+                    // throw {code:503,error:true,msg:'Username/email not found!'}
+                    // throw {code:503,error:true,msg:'Username/email not found!'}
+                    errorObj = {code:503,error:true,msg:'Username/email not found!'};
+                    throw errorObj;
                 }
 
                 let hashedPin = getUserByUsernameResult.pin
                 bcrypt.compare(pin, hashedPin, function(err, result) {
                     if(!result){
-                        throw {code:503,error:true,msg:'User/email not found!'}
-                    } 
-                });
-
-                var token = jwt.sign({ username,pin:hashedPin }, jwtSecret,{expiresIn: 30 * 60});
-                return res.status(200).json({
-                    error:false,code:200,msg:'Login Success',
-                    data:{
-                        
-                        username,
-                        pin:hashedPin,
-                        token
+                        errorObj = {code:503,error:true,msg:'Username/email not found!'};
+                        return res.status(errorObj.code).json(errorObj)
+                    }else{
+                        let token = jwt.sign({ username,pin:hashedPin }, jwtSecret,{expiresIn: 30 * 60});
+                        return res.status(200).json({
+                            error:false,code:200,msg:'Login Success',
+                            data:{
+                                username,
+                                pin:hashedPin,
+                                token
+                            }
+                        })
                     }
-                })
+                });
             }catch(e){
+                console.log(e)
                 return res.status(e.code).json(e)
             }
         })
@@ -178,7 +187,7 @@ app.group("/api/v1",() =>{
             try{
                 let getUserByUsernameResult = await getUserByUsername(req.user.username)
                 if(!getUserByUsernameResult){
-                    throw {code:503,error:true,msg:'User/email not found!'}
+                    throw {code:503,error:true,msg:'Username/email not found!'}
                 }
                 
                 let data = {
@@ -205,7 +214,7 @@ app.group("/api/v1",() =>{
             try{
                 let getUserByUsernameResult = await getUserByUsername(req.user.username)
                 if(!getUserByUsernameResult){
-                    throw {code:503,error:true,msg:'User/email not found!'}
+                    throw {code:503,error:true,msg:'Username/email not found!'}
                 }
                                 
                 let findTodo = await getTodoById(id)
@@ -233,12 +242,13 @@ app.group("/api/v1",() =>{
                 console.log(e)
             }
         })
-        app.delete('/',async (req,res) => {
-            const {id,todo} = req.body
+        app.delete('/:id',async (req,res) => {
+            const {todo} = req.body
+            const id = req.params.id
             try{
                 let getUserByUsernameResult = await getUserByUsername(req.user.username)
                 if(!getUserByUsernameResult){
-                    throw {code:503,error:true,msg:'User/email not found!'}
+                    throw {code:503,error:true,msg:'Username/email not found!'}
                 }
                 
                 let findTodo = await getTodoById(id)
@@ -248,7 +258,6 @@ app.group("/api/v1",() =>{
 
                 let data = {
                     id,
-                    todo,
                     userId : getUserByUsernameResult.id
                 }
                 let deleteTodo = await deleteTodoById(data)
