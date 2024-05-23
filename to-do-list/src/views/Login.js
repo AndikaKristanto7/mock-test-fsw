@@ -78,6 +78,9 @@ function App() {
         setCheckUsernameResp(
             obj
         )
+        setSubmitResp(
+            obj
+        )
     }
     const onSubmit = async (data) => {
         let submitRespObj = {isSubmitted : true}
