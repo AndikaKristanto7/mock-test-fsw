@@ -6,6 +6,7 @@ const { getEnv } = require('./helpers/getEnv');
 const jwt = require('jsonwebtoken');
 const jwtSecret = getEnv('SECRET')
 const port = 8080
+
 function authenticateToken(req, res, next) {
   let reqPath = req.path
   if (req.method === 'GET') {
