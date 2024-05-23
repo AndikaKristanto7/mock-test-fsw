@@ -20,6 +20,7 @@ function App() {
         setError,
         watch,
         getValues,
+        setValue,
         formState: { errors },
     } = useForm()
     const [checkUsernameResp, setCheckUsernameResp] = useState({
@@ -75,12 +76,11 @@ function App() {
             error : false,
             msg : '',
         }
-        setCheckUsernameResp(
-            obj
-        )
-        setSubmitResp(
-            obj
-        )
+        setCheckUsernameResp(obj)
+        setSubmitResp(obj)
+        setValue('username','')
+        setValue('pin','')
+
     }
     const onSubmit = async (data) => {
         let submitRespObj = {isSubmitted : true}

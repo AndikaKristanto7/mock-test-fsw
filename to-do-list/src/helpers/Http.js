@@ -11,12 +11,7 @@ class Http {
     this.cookie = document.cookie;
     this.token = '';
     if(this.cookie != ''){
-      this.cookie = this.cookie.split(';')
-      .map(v => v.split('='))
-      .reduce((acc, v) => {
-        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-        return acc;
-      }, {});
+      this.reInstateCookie()
     }else{
       this.setCookie('to-do-default-cookie','todolist',30)
     }
