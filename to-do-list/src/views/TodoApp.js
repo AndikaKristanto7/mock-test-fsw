@@ -53,6 +53,8 @@ const TodoApp= () => {
         console.log(user)
         dispatch(initTodo(resp.data.data))
       })
+    }else{
+      navigate('/')
     } 
   },[cookies])
 
