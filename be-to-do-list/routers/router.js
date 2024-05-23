@@ -15,12 +15,12 @@ async function getUserByUsername(username){
         }
     })
 }
-async function insertUser(data){
-    bcrypt.hash(data.pin, saltRounds, async function(err, hash) {
+async function insertUser(username,pin){
+    bcrypt.hash(pin, saltRounds, async function(err, hash) {
         return await prisma.user.create({
             data : {
-                username : data.username,
-                pin : hash,
+                username: username,
+                pin : hash   
             }
         })
     });   
@@ -122,11 +122,11 @@ app.group("/api/v1",() =>{
                 }
 
                 let getUserByUsernameResult = await getUserByUsername(username)
+                
                 if(getUserByUsernameResult){
                     throw {code:503,error:true,msg:'Username/email exist!'}
                 }
-
-                await insertUser(req.body)
+                await insertUser(username,pin)
                 return res.status(200).json({code:200,error:false,msg:`Create user with username/email ${username} success!`})
             }catch(e){
                 return res.status(e.code).json(e)
@@ -139,8 +139,6 @@ app.group("/api/v1",() =>{
             try{
                 let getUserByUsernameResult = await getUserByUsername(username)
                 if(!getUserByUsernameResult){
-                    // throw {code:503,error:true,msg:'Username/email not found!'}
-                    // throw {code:503,error:true,msg:'Username/email not found!'}
                     errorObj = {code:503,error:true,msg:'Username/email not found!'};
                     throw errorObj;
                 }

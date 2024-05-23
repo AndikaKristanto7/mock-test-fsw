@@ -58,6 +58,15 @@ function App() {
                         <div className='text-center' style={{backgroundColor:'#3467eb',color:'white'}}>
                             <span>Register Form</span>
                         </div>
+                        <Row className='mt-3'>
+                            <Col md="12">
+                                {submitResp.submitted && (
+                                    <Alert variant={submitResp.error ? `danger` : 'success'} className='mx-3'>
+                                        {submitResp.msg}
+                                    </Alert>
+                                )}
+                            </Col>
+                        </Row>
                         <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicEmail">
                             <Form.Label>Username / Email address</Form.Label>
                             <Form.Control type="text" placeholder="Enter username / email" {...register("username", { required: 'This field required!' })}/>
@@ -65,7 +74,7 @@ function App() {
                         </Form.Group>
                         <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicPin">
                             <Form.Label>PIN</Form.Label>
-                            <Form.Control type="password" placeholder="PIN must be 6 digits of numbers" {...register("pin", 
+                            <Form.Control type="password" placeholder="PIN must be 6 digits of numbers" maxLength="6" {...register("pin", 
                                 { 
                                     required: "This field required!", 
                                     pattern : {
@@ -78,7 +87,7 @@ function App() {
                         </Form.Group>
                         <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicConfirmationPin">
                             <Form.Label>Confirmation PIN</Form.Label>
-                            <Form.Control type="password" placeholder="PIN must be 6 digits of numbers" {...register("confirmPin", 
+                            <Form.Control type="password" placeholder="PIN must be 6 digits of numbers" maxLength="6" {...register("confirmPin", 
                                 { 
                                     required: "This field required!", 
                                     pattern : {
@@ -89,15 +98,6 @@ function App() {
                             )} />
                             <ErrorMessage errors={errors} name="confirmPin" as="p" style={{color:'red'}}/>
                         </Form.Group>
-                        <Row>
-                            <Col md="12">
-                                {submitResp.submitted && (
-                                    <Alert variant={submitResp.error ? `danger` : 'success'} className='mx-3'>
-                                        {submitResp.msg}
-                                    </Alert>
-                                )}
-                            </Col>
-                        </Row>
                         <Row className='mx-3 mt-4 mb-2'>
                             <Col md={{ span: 4}}>
                                 <Link to={'/'}>Login</Link>

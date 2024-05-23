@@ -19,10 +19,16 @@ function App() {
         handleSubmit,
         setError,
         watch,
+        getValues,
         formState: { errors },
     } = useForm()
+    const [checkUsernameResp, setCheckUsernameResp] = useState({
+        isSubmitted : false,
+        error : false,
+        msg : '',
+    })
     const [submitResp, setSubmitResp] = useState({
-        submitted : false,
+        isSubmitted : false,
         error : false,
         msg : ''
     })
@@ -30,8 +36,51 @@ function App() {
     const navigate = useNavigate({})
     const dispatch = useDispatch();
 
+    const showAlert = (data) => {
+        if(data.isSubmitted){
+            return (
+                <Row className='mt-3'>
+                    <Col md="12">
+                        <Alert variant={data.error ? `danger` : 'success'} className='mx-3'>
+                            {data.msg}
+                        </Alert>
+                    </Col>
+                </Row>
+            )
+        }
+    }
+    const usernameCheck = async() => {
+        let username = getValues('username')
+        if(username === ""){
+            setError('username',{ type: 'custom', message: 'This field is required!' })
+            return;
+        }else{
+            setError('username',false)
+        }
+        var respObj = {}
+
+        respObj = {
+            isSubmitted : true,
+            error : false,
+            msg : ''
+        }
+        setCheckUsernameResp(
+            respObj
+        )
+    }
+
+    const handleBack = () => {
+        let obj = {
+            isSubmitted : false,
+            error : false,
+            msg : '',
+        }
+        setCheckUsernameResp(
+            obj
+        )
+    }
     const onSubmit = async (data) => {
-        let submitRespObj = {submitted : true}
+        let submitRespObj = {isSubmitted : true}
         BeApp.userLogin(data)
         .then((resp)=>{
             submitRespObj.error = resp.data.error
@@ -64,38 +113,61 @@ function App() {
                         <div className='text-center' style={{backgroundColor:'#3467eb',color:'white'}}>
                             <span>Login Form</span>
                         </div>
-                        <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicEmail">
-                            <Form.Label>Username / Email address</Form.Label>
-                            <Form.Control type="text" placeholder="Enter username / email"  {...register("username", { required: 'This field required!' })} />
-                            <ErrorMessage errors={errors} name="username" as="p" style={{color:'red'}}/>
-                        </Form.Group>
-                        <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicPin">
-                            <Form.Label>PIN</Form.Label>
-                            <Form.Control type="password" placeholder="PIN" {...register("pin", 
-                                { 
-                                    required: "This field required!",  
-                                }
-                            )}/>
-                            <ErrorMessage errors={errors} name="pin" as="p" style={{color:'red'}}/>
-                        </Form.Group>
-                        <Row>
-                            <Col md="12">
-                                {submitResp.submitted && (
-                                    <Alert variant={submitResp.error ? `danger` : 'success'} className='mx-3'>
-                                        {submitResp.msg}
-                                    </Alert>
-                                )}
-                            </Col>
-                        </Row>
-                        <Row className='mx-3 mt-4 mb-2'>
-                            <Col md={{ span: 4}}>
+                        {!checkUsernameResp.isSubmitted && (
+                           <>
+                                <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicEmail">
+                                    <Form.Label>Username / Email address</Form.Label>
+                                    <Form.Control type="text" placeholder="Enter username / email"  {...register("username", { required: 'This field required!' })} />
+                                    <ErrorMessage errors={errors} name="username" as="p" style={{color:'red'}}/>
+                                </Form.Group>
+                           </>
+                           
+                        )}
+                        {checkUsernameResp.isSubmitted && !checkUsernameResp.error &&  (
+                            <>
+                            {showAlert(submitResp)}
+                            <Form.Group className="mx-4 mb-3 mt-3" controlId="formBasicPin" >
+                                <Form.Label>PIN</Form.Label>
+                                <Form.Control type="password" placeholder="PIN" maxLength="6" {...register("pin", 
+                                    { 
+                                        required: "This field required!",
+                                        pattern : {
+                                            value : /^[0-9]{6,6}$/g,
+                                            message: "Must be 6 digits of numbers!"
+                                        },
+                                        maxLength : 6  
+                                    }
+                                )}/>
+                                <ErrorMessage errors={errors} name="pin" as="p" style={{color:'red'}}/>
+                            </Form.Group>
+                            </>
+                        )}
+                        <Row className='mt-4 mb-2 mx-2'>
+                            <Col md={{span: 4}}>
                                 <Link to={'/register'}>Register</Link>
                             </Col>
-                            <Col md={{span:3,offset:5}}>
-                                <Button variant="primary" type="submit">
-                                    Login
-                                </Button>
-                            </Col>
+                            {!checkUsernameResp.isSubmitted && (
+                                <Col md={{span:2, offset:5}}>
+                                    <Button variant="primary" type="button" onClick={(e) => usernameCheck(e)}>
+                                        Next
+                                    </Button>
+                                </Col>
+                            )}
+                            {checkUsernameResp.isSubmitted && !checkUsernameResp.error && (
+                                <>  
+                                    <Col md={{span:1,offset:3}}>
+                                        <Button variant="primary" type="button" onClick={(e) => handleBack(e)}>
+                                            Back
+                                        </Button>
+                                    </Col>
+                                    <Col md={{span:1,offset:1}}>
+                                        <Button variant="primary" type="submit">
+                                            Login
+                                        </Button>
+                                    </Col>
+                                </>
+                            )}
+                            
                         </Row>   
                     </Form>
                 </Col>
